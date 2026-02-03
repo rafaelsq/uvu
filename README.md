@@ -2,6 +2,9 @@
 
 A lightweight CLI tool to interactively review and upgrade your Python project dependencies using `uv`.
 
+<img width="458" height="231" alt="image" src="https://github.com/user-attachments/assets/d6d1bd0b-f1f0-4f33-a49a-f8acb35121d9" />
+
+
 ## Features
 - 🔍 **Smart Filtering**: Only shows updates for direct dependencies listed in your `pyproject.toml`.
 - 📊 **Interactive Navigation**: Step through packages one-by-one with `Next`, `Back`, and `Skip` options.
