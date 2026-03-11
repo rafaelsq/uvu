@@ -17,8 +17,14 @@ def clear_screen():
         print("\n" * 100)
 
 
-def get_direct_dependencies():
-    """Extract top-level dependencies from pyproject.toml."""
+def get_project_dependencies():
+    """Extract direct dependencies from pyproject.toml.
+
+    This includes:
+    - `project.dependencies`
+    - all `project.optional-dependencies` groups
+    - top-level `[dependency-groups]` as used by uv / PEP 735
+    """
 
     path = Path("pyproject.toml")
     if not path.exists():
@@ -27,8 +33,32 @@ def get_direct_dependencies():
 
     with open(path, "rb") as f:
         data = tomllib.load(f)
-        # Handle project dependencies or optional groups if needed
-        return data.get("project", {}).get("dependencies", [])
+        project = data.get("project", {}) or {}
+
+        # Base project dependencies
+        deps: list[str] = list(project.get("dependencies", []) or [])
+
+        # PEP 621 optional dependencies (extras), e.g. [project.optional-dependencies]
+        optional_deps = project.get("optional-dependencies", {}) or {}
+        for group_deps in optional_deps.values():
+            if group_deps:
+                deps.extend(group_deps)
+
+        # PEP 735 / uv dependency groups, e.g. [dependency-groups]
+        dep_groups = data.get("dependency-groups", {}) or {}
+        for group_deps in dep_groups.values():
+            if group_deps:
+                deps.extend(group_deps)
+
+        # Return a deduplicated list while preserving order
+        seen = set()
+        unique_deps: list[str] = []
+        for d in deps:
+            if d not in seen:
+                seen.add(d)
+                unique_deps.append(d)
+
+        return unique_deps
 
 
 def get_package_url(pkg_name):
@@ -52,7 +82,7 @@ def get_package_url(pkg_name):
 
 def main():
     # 1. Initialization
-    raw_deps = get_direct_dependencies()
+    raw_deps = get_project_dependencies()
     direct_names = {re.split(r"[<>=!~]", d)[0].strip().lower() for d in raw_deps}
 
     print("🔍 Scanning for updates...")
