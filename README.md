@@ -11,6 +11,17 @@ A lightweight CLI tool to interactively review and upgrade your Python project d
 - 🔗 **Direct Changelogs**: Provides clickable links to PyPI/GitHub for every package.
 - 🎨 **Visual Feedback**: Clean, color-coded terminal interface with a live session history.
 - ⚡ **Powered by uv**: Fast, reliable dependency resolution and locking.
+- 🛡️ **Release Cooldown**: Ignores releases newer than `UVU_MIN_AGE_DAYS` days (default `3`, `0` disables).
+
+## Configuration
+
+| Env var            | Default | Description                                                     |
+| ------------------ | ------- | --------------------------------------------------------------- |
+| `UVU_MIN_AGE_DAYS` | `3`     | Only offer versions uploaded at least this many days ago. `0` disables the filter. |
+
+```bash
+UVU_MIN_AGE_DAYS=7 uvu
+```
 
 ## Installation
 
